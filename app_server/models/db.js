@@ -1,6 +1,11 @@
 var mongoose = require('mongoose');
 
-var dbURI = 'mongodb://localhost/Flash';
+var dbURI = 'mongodb://localhost/flashTest';
+
+if (process.env.NODE_ENV === 'production') {
+  dbURI = process.env.MONGODB_URI;
+}
+
 mongoose.connect(dbURI);
 
 mongoose.connection.on('connected', function () {
@@ -30,6 +35,12 @@ process.once('SIGUSR2', function () {
 
 process.on('SIGINT', function () {
   gracefulShutdown('app termination', function () {
+    process.exit(0);
+  });
+});
+
+process.on('SIGTERM', function() {
+  gracefulShutdown('Heroku app shutdown', function () {
     process.exit(0);
   });
 });
